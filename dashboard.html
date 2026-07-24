@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ocean Studio - Dashboard</title>
+    
+    <!-- Face API ML Library -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+
+      :root {
+        --bg-color: #081426;
+        --card-bg: rgba(15, 23, 42, 0.65);
+        --card-border: rgba(56, 189, 248, 0.35);
+        --card-glow: rgba(56, 189, 248, 0.25);
+        --text-primary: #f0f9ff;
+        --text-secondary: #bae6fd;
+        --accent-water: #38bdf8;
+        --accent-shell: #fbbf24;
+        --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        --font-main: 'Quicksand', sans-serif;
+        --font-heading: 'Outfit', sans-serif;
+      }
+
+      body.light-mode {
+        --bg-color: #e0f2fe;
+        --card-bg: rgba(255, 255, 255, 0.65);
+        --card-border: rgba(255, 255, 255, 0.95);
+        --card-glow: rgba(2, 132, 199, 0.2);
+        --text-primary: #082f49;
+        --text-secondary: #0369a1;
+        --accent-water: #0ea5e9;
+        --accent-shell: #f59e0b;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      @keyframes waveShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      body {
+        background: linear-gradient(-45deg, #020617, #0f172a, #082f49, #164e63);
+        background-size: 400% 400%;
+        animation: waveShift 15s ease infinite;
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        padding-bottom: 3rem;
+        transition: background 0.5s ease;
+      }
+
+      body.light-mode {
+        background: linear-gradient(-45deg, #e0f2fe, #bae6fd, #fef3c7, #ccfbf1);
+        background-size: 400% 400%;
+      }
+
+      /* Floating Ocean Bubbles */
+      .bubble-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bubble {
+        position: absolute;
+        bottom: -50px;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(56, 189, 248, 0.2));
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        animation: floatUp 8s infinite ease-in;
+      }
+
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(0.8); opacity: 0; }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.8; }
+        100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+      }
+
+      .bubble:nth-child(1) { left: 10%; width: 25px; height: 25px; animation-duration: 7s; animation-delay: 0s; }
+      .bubble:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 10s; animation-delay: 2s; }
+      .bubble:nth-child(3) { left: 50%; width: 18px; height: 18px; animation-duration: 6s; animation-delay: 1s; }
+      .bubble:nth-child(4) { left: 70%; width: 32px; height: 32px; animation-duration: 9s; animation-delay: 3s; }
+      .bubble:nth-child(5) { left: 85%; width: 22px; height: 22px; animation-duration: 8s; animation-delay: 1.5s; }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        padding: 0 2.5rem;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--card-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      body.light-mode .navbar { background: rgba(255, 255, 255, 0.4); }
+
+      .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+
+      .logo-bubble-group {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-bubble {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #0284c7 0%, #082f49 70%, #0369a1 100%);
+        box-shadow: 0 4px 12px rgba(8, 47, 73, 0.35), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f0f9ff;
+        font-size: 1.05rem;
+        animation: bubbleFloat 3s infinite ease-in-out;
+      }
+
+      .small-bubble {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #38bdf8, #0369a1);
+        box-shadow: 0 2px 6px rgba(3, 105, 161, 0.4);
+        animation: bubblePop 2.5s infinite ease-in-out;
+      }
+
+      @keyframes bubbleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      @keyframes bubblePop { 0%, 100% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } }
+
+      .logo-text { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+
+      .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+      .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 700; margin-left: 1rem; }
+      .nav-links a:hover, .nav-links a.active { color: var(--accent-water); }
+
+      .theme-btn { 
+        background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-primary); 
+        padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 700; font-family: var(--font-main);
+      }
+
+      .container { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; position: relative; z-index: 2; }
+
+      .dash-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+      .top-selects { display: flex; align-items: center; gap: 1rem; }
+
+      .select-box { 
+        background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-primary); 
+        padding: 8px 14px; border-radius: 10px; outline: none; font-family: var(--font-main); font-weight: 600; cursor: pointer;
+      }
+
+      .btn-get { 
+        background: var(--btn-gradient); color: #ffffff; border: none; padding: 10px 22px; 
+        border-radius: 12px; font-weight: 700; font-family: var(--font-main); cursor: pointer; box-shadow: 0 4px 18px rgba(14, 165, 233, 0.4);
+      }
+
+      .btn-ghost { 
+        background: transparent; color: var(--text-secondary); border: none; font-weight: 700; 
+        font-family: var(--font-main); cursor: pointer; margin-left: 1rem; font-size: 0.9rem; 
+      }
+      .btn-ghost:hover { color: var(--text-primary); }
+
+      .main-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+
+      .card { 
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.5rem; 
+        position: relative; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
+        box-shadow: 0 10px 30px var(--card-glow), inset 0 0 12px rgba(255, 255, 255, 0.08);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+      .card:hover { border-color: rgba(56, 189, 248, 0.6); }
+
+      .btn-pill { 
+        background: rgba(14, 165, 233, 0.15); color: var(--accent-water); border: 1px solid rgba(14, 165, 233, 0.4); 
+        padding: 8px 16px; border-radius: 10px; font-weight: 700; font-family: var(--font-main); cursor: pointer; font-size: 0.85rem; 
+      }
+      .btn-pill.purple { 
+        background: rgba(245, 158, 11, 0.15); color: var(--accent-shell); border: 1px solid rgba(245, 158, 11, 0.4); 
+      }
+
+      .override-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--card-border);
+        color: var(--text-secondary);
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .override-btn:hover { background: var(--accent-water); color: #ffffff; }
+
+      .cam-box { width: 100%; height: 210px; background: #082f49; border-radius: 14px; overflow: hidden; margin-bottom: 1rem; position: relative; border: 1px solid var(--card-border); }
+      video { width: 100%; height: 100%; object-fit: cover; }
+
+      .overlay-text { 
+        position: absolute; top: 12px; left: 12px; font-size: 0.82rem; color: #082f49; z-index: 2; line-height: 1.5; font-weight: 700; 
+        background: rgba(255,255,255,0.85); padding: 4px 10px; border-radius: 8px; backdrop-filter: blur(8px);
+      }
+
+      .vis-box { height: 60px; background: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; margin-bottom: 1rem; border: 1px solid var(--card-border); position: relative; }
+      body.light-mode .vis-box { background: rgba(255, 255, 255, 0.4); }
+
+      .vis-label { position: absolute; top: 8px; left: 12px; font-size: 0.75rem; color: var(--text-secondary); font-weight: 700; pointer-events: none; z-index: 2; }
+      canvas { width: 100%; height: 100%; }
+
+      .progress-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+      .progress-bar-fill { height: 100%; width: 0%; background: var(--btn-gradient); transition: width 0.3s; }
+
+      .rec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+      .rec-list { max-height: 420px; overflow-y: auto; padding-right: 4px; }
+
+      .rec-card {
+        display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.8);
+        padding: 12px; border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.08); gap: 12px;
+      }
+      body.light-mode .rec-card { background: rgba(255, 255, 255, 0.65); border-color: rgba(255,255,255,0.9); }
+
+      .rec-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+      .rec-thumb { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+      .rec-text-wrap { display: flex; flex-direction: column; min-width: 0; }
+      .rec-title { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); line-height: 1.3; margin-bottom: 2px; word-break: break-word; }
+      .rec-sub { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+
+      .rec-actions { display: flex; gap: 6px; flex-shrink: 0; }
+      .btn-play { background: var(--accent-water); color: #ffffff; border: none; padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; font-family: var(--font-main); cursor: pointer; }
+      .btn-open { background: rgba(245, 158, 11, 0.15); color: var(--accent-shell); border: 1px solid rgba(245, 158, 11, 0.3); padding: 7px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; font-family: var(--font-main); cursor: pointer; }
+
+      .history-box { max-height: 180px; overflow-y: auto; font-size: 0.82rem; }
+      .history-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(56, 189, 248, 0.15); }
+
+      .player-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+      .player-container { width: 100%; height: 210px; background: #082f49; border-radius: 14px; overflow: hidden; border: 1px solid var(--card-border); position: relative; }
+
+      .song-player-card {
+        width: 100%; height: 100%; display: flex; align-items: center; gap: 20px; padding: 20px;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(8, 47, 73, 0.9) 100%);
+      }
+      body.light-mode .song-player-card { background: linear-gradient(135deg, rgba(224, 242, 254, 0.95) 0%, rgba(254, 243, 199, 0.95) 100%); }
+
+      .song-cover-img { width: 120px; height: 120px; border-radius: 14px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255, 255, 255, 0.2); }
+      .song-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+      .song-name-text { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
+      .song-artist-text { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 16px; }
+
+      .btn-yt-launch {
+        display: inline-flex; align-items: center; gap: 8px; background: #ef4444; color: #ffffff; padding: 10px 20px;
+        border-radius: 25px; font-size: 0.88rem; font-weight: 700; font-family: var(--font-main); text-decoration: none; width: fit-content;
+      }
+
+      input#searchInput {
+        background: rgba(0,0,0,0.3) !important; color: var(--text-primary) !important; border: 1px solid var(--card-border) !important; font-family: var(--font-main); font-weight: 600;
+      }
+      body.light-mode input#searchInput { background: rgba(255, 255, 255, 0.7) !important; }
+
+      .ambient-floating-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid var(--card-border);
+        color: var(--accent-water);
+        padding: 10px 18px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s ease;
+      }
+      .ambient-floating-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="bubble-container">
+        <div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    </div>
+
+    <button class="ambient-floating-btn" onclick="toggleAmbientOcean()" id="ambientBtn">
+        <span>🌊 Ocean Ambient:</span> <span id="ambientStatus">OFF</span>
+    </button>
+
+    <nav class="navbar">
+        <a href="/" class="logo-container">
+            <div class="logo-bubble-group">
+                <div class="main-bubble">🎵</div>
+                <div class="small-bubble"></div>
+            </div>
+            <span class="logo-text">AI Ocean Studio</span>
+        </a>
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/dashboard" class="active">Dashboard</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()"><span id="themeText">Light</span> ☀️</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dash-top">
+            <div>
+                <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800;">Studio Dashboard 🦪</h1>
+                <p style="color: var(--text-secondary); font-size: 0.88rem; font-weight: 600;">Live controls • Mood-aware recommendations • Interactive player</p>
+            </div>
+            <div class="top-selects">
+                <label style="font-size: 0.85rem; font-weight: 700; cursor: pointer;"><input type="checkbox" id="mirrorCheck" onchange="toggleMirror()"> Mirror</label>
+                <select id="platformSelect" class="select-box">
+                    <option value="youtube">YouTube</option>
+                    <option value="spotify">Spotify</option>
+                </select>
+                <button class="btn-get" onclick="fetchRecommendations()">Get Recommendations</button>
+                <button class="btn-ghost" onclick="exportCSVHistory()">Export CSV</button>
+                <button class="btn-ghost" onclick="clearHistory()">Clear History</button>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <h3 style="font-family: var(--font-heading); margin-bottom: 0.2rem; font-size: 1.05rem; font-weight: 800;">Live Face & Voice ✨</h3>
+                <p style="color: var(--text-secondary); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.8rem;">
+                    Toggle camera & mic — real-time mood detection.
+                </p>
+
+                <div style="display: flex; gap: 8px; margin-bottom: 0.8rem; flex-wrap: wrap;">
+                    <button class="btn-pill" onclick="startCam()">Start Cam</button>
+                    <button class="btn-pill purple" onclick="stopCam()">Stop Cam</button>
+                    <button class="btn-pill" onclick="startVoice()">Start Voice</button>
+                    <button class="btn-pill purple" onclick="stopVoice()">Stop Voice</button>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px;">Manual Mood Override:</div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button class="override-btn" onclick="manualMoodOverride('happy')">😊 Happy</button>
+                        <button class="override-btn" onclick="manualMoodOverride('sad')">😢 Sad</button>
+                        <button class="override-btn" onclick="manualMoodOverride('angry')">😠 Angry</button>
+                        <button class="override-btn" onclick="manualMoodOverride('fear')">😨 Fear</button>
+                        <button class="override-btn" onclick="manualMoodOverride('tired')">😴 Tired</button>
+                        <button class="override-btn" onclick="manualMoodOverride('exhausted')">😫 Exhausted</button>
+                        <button class="override-btn" onclick="manualMoodOverride('neutral')">😐 Neutral</button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem;">
+                    <div>
+                        <div class="cam-box">
+                            <div class="overlay-text">
+                                Camera: <span id="camStatus">off</span><br>
+                                Mic: <span id="micStatus">off</span>
+                            </div>
+                            <video id="webcam" autoplay playsinline muted></video>
+                        </div>
+
+                        <div class="vis-box">
+                            <span class="vis-label">Live Motion Visualizer</span>
+                            <canvas id="visCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; justify-content: space-around;">
+                        <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Tip: Toggle Mirror to flip preview.</div>
+
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">Face mood</div>
+                            <div style="font-size: 1.3rem; font-weight: 800; text-transform: capitalize;" id="faceMoodVal">Off</div>
+                            <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Confidence: <span id="confVal">—</span></div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" id="faceConfBar"></div></div>
+                        </div>
+
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">Voice mood</div>
+                            <div style="font-size: 1.3rem; font-weight: 800;" id="voiceMoodVal">Stopped</div>
+                            <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Level: <span id="voiceLevelVal">—</span></div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" id="voiceLevelBar"></div></div>
+                        </div>
+
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Combined</div>
+                            <span style="background: var(--btn-gradient); color: #ffffff; padding: 4px 16px; border-radius: 20px; font-weight: 800; font-size: 0.9rem; text-transform: capitalize; display: inline-block;" id="combinedVal">Neutral</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="rec-header">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800;">Recommendations</h3>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Based on live mood</span>
+                </div>
+
+                <div class="rec-list" id="recList">
+                    <p style="color: var(--text-secondary); font-size: 0.88rem; font-weight: 600; padding: 1rem 0;">Click 'Get Recommendations' or search a track...</p>
+                </div>
+
+                <h3 style="font-family: var(--font-heading); margin-top: 1.2rem; margin-bottom: 0.5rem; font-size: 1.05rem; font-weight: 800;">Mood History</h3>
+                <div class="history-box" id="historyBox">
+                    <div class="history-item"><div><strong>Neutral</strong><div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">combined • System Ready</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-grid">
+            <div class="card">
+                <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800;">Player & Playlist</h3>
+                <div class="player-container" id="playerHolder" style="margin-top: 1rem;">
+                    <div class="song-player-card">
+                        <img src="https://img.youtube.com/vi/jfKfPfyJRdk/hqdefault.jpg" class="song-cover-img" alt="Lofi Girl Cover">
+                        <div class="song-details">
+                            <div class="song-name-text">Lofi Beats to Study/Relax</div>
+                            <div class="song-artist-text">Lofi Girl Stream</div>
+                            <a href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" class="btn-yt-launch">
+                                <span>▶ Listen on YouTube</span> ↗
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800;">Voice & Manual Search 🎤</h3>
+                    <select id="searchPlatformSelect" class="select-box" style="padding: 4px 10px; font-size: 0.8rem;">
+                        <option value="youtube">YouTube</option>
+                        <option value="spotify">Spotify</option>
+                    </select>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; margin-top: 4px;">Find tracks by typing or voice (any language):</p>
+                
+                <div style="display: flex; gap: 8px; margin-top: 1.2rem; align-items: center;">
+                    <input type="text" id="searchInput" style="flex: 1; padding: 10px; border-radius: 10px; outline: none;" placeholder="Search any song..." onkeypress="if(event.key==='Enter') manualSearch();">
+                    
+                    <button id="voiceSearchBtn" class="btn-pill purple" onclick="startVoiceSearch()" title="Click to speak">🎤 Speak</button>
+                    <button class="btn-pill" onclick="manualSearch()">Search</button>
+                </div>
+                <div id="speechStatus" style="font-size: 0.78rem; color: var(--accent-water); margin-top: 6px; display: none; font-weight: 700;">🎙️ Listening... Speak song name into mic now</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      let camStream = null;
+      let detectionLoop = null;
+      let audioCtx = null;
+      let analyser = null;
+      let micStream = null;
+      let isMicRunning = false;
+      let lastDetectedMood = '';
+      
+      let ambientAudioCtx = null;
+      let isAmbientPlaying = false;
+
+      function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        document.getElementById('themeText').textContent = isLight ? 'Dark 🌙' : 'Light ☀️';
+      }
+
+      function cleanTitle(str) {
+        const parser = new DOMParser();
+        const decoded = parser.parseFromString(str, 'text/html').body.textContent;
+        return decoded ? decoded.replace(/&amp;/g, '&') : str;
+      }
+
+      function manualMoodOverride(selectedMood) {
+        document.getElementById('combinedVal').textContent = selectedMood;
+        document.getElementById('faceMoodVal').textContent = selectedMood;
+        document.getElementById('confVal').textContent = '100%';
+        document.getElementById('faceConfBar').style.width = '100%';
+        lastDetectedMood = selectedMood;
+        addHistory(selectedMood + ' (Manual)');
+        fetchRecommendations();
+      }
+
+      async function startCam() {
+        const video = document.getElementById('webcam');
+        try {
+          camStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = camStream;
+          document.getElementById('camStatus').textContent = 'on';
+
+          await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+          await faceapi.nets.faceExpressionNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+
+          detectionLoop = setInterval(async () => {
+            if (video.paused || video.ended) return;
+
+            let detectedMood = 'happy';
+            let confScore = 85;
+
+            try {
+              const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
+              if (detection && detection.expressions) {
+                const expr = detection.expressions;
+                let maxVal = 0;
+                for (const [key, val] of Object.entries(expr)) {
+                  if (val > maxVal) {
+                    maxVal = val;
+                    detectedMood = key;
+                  }
+                }
+                confScore = Math.round(maxVal * 100);
+              }
+            } catch (err) {
+              detectedMood = 'happy';
+            }
+
+            let mappedMood = 'neutral';
+            if (['happy', 'surprised'].includes(detectedMood)) {
+              mappedMood = 'happy';
+            } else if (detectedMood === 'sad') {
+              mappedMood = 'sad';
+            } else if (detectedMood === 'angry') {
+              mappedMood = 'angry';
+            } else if (detectedMood === 'fearful') {
+              mappedMood = 'fear';
+            } else if (detectedMood === 'disgusted') {
+              mappedMood = 'exhausted';
+            } else if (detectedMood === 'neutral') {
+              const voiceLvl = parseFloat(document.getElementById('voiceLevelVal').textContent) || 0;
+              if (voiceLvl > 0 && voiceLvl < 0.02) {
+                mappedMood = 'tired';
+              } else {
+                mappedMood = 'neutral';
+              }
+            }
+
+            document.getElementById('faceMoodVal').textContent = detectedMood;
+            document.getElementById('confVal').textContent = confScore + '%';
+            document.getElementById('faceConfBar').style.width = confScore + '%';
+            document.getElementById('combinedVal').textContent = mappedMood;
+
+            if (mappedMood !== lastDetectedMood) {
+              lastDetectedMood = mappedMood;
+              addHistory(mappedMood);
+              fetchRecommendations();
+            }
+          }, 800);
+
+        } catch(e) {
+          alert('Camera error: ' + e.message);
+        }
+      }
+
+      function stopCam() {
+        if (camStream) {
+          camStream.getTracks().forEach(t => t.stop());
+          document.getElementById('webcam').srcObject = null;
+          document.getElementById('camStatus').textContent = 'off';
+          document.getElementById('faceMoodVal').textContent = 'Off';
+          document.getElementById('confVal').textContent = '—';
+          document.getElementById('faceConfBar').style.width = '0%';
+        }
+        if (detectionLoop) clearInterval(detectionLoop);
+      }
+
+      async function startVoice() {
+        if (isMicRunning) return;
+        try {
+          micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioCtx.createAnalyser();
+          const source = audioCtx.createMediaStreamSource(micStream);
+          source.connect(analyser);
+          analyser.fftSize = 64;
+
+          isMicRunning = true;
+          document.getElementById('micStatus').textContent = 'on';
+          document.getElementById('voiceMoodVal').textContent = 'Active';
+
+          const canvas = document.getElementById('visCanvas');
+          const ctx = canvas.getContext('2d');
+
+          function drawSpectrum() {
+            if (!isMicRunning) return;
+            requestAnimationFrame(drawSpectrum);
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            let sum = 0;
+            for(let i=0; i<bufferLength; i++) sum += dataArray[i];
+            const avgLevel = (sum / bufferLength / 255).toFixed(3);
+            
+            document.getElementById('voiceLevelVal').textContent = avgLevel;
+            document.getElementById('voiceLevelBar').style.width = Math.min(100, avgLevel * 200) + '%';
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / bufferLength) * 2.5;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+              const barHeight = (dataArray[i] / 255) * canvas.height;
+              ctx.fillStyle = '#38bdf8';
+              ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+              x += barWidth + 2;
+            }
+          }
+          drawSpectrum();
+        } catch(e) {
+          alert('Microphone error: ' + e.message);
+        }
+      }
+
+      function stopVoice() {
+        if (micStream) {
+          micStream.getTracks().forEach(t => t.stop());
+          isMicRunning = false;
+          document.getElementById('micStatus').textContent = 'off';
+          document.getElementById('voiceMoodVal').textContent = 'Stopped';
+          document.getElementById('voiceLevelVal').textContent = '—';
+          document.getElementById('voiceLevelBar').style.width = '0%';
+        }
+      }
+
+      function toggleMirror() {
+        const v = document.getElementById('webcam');
+        v.style.transform = document.getElementById('mirrorCheck').checked ? 'scaleX(-1)' : 'scaleX(1)';
+      }
+
+      async function fetchRecommendations() {
+        let mood = document.getElementById('combinedVal').textContent.toLowerCase().replace(' (manual)', '');
+        if (mood === 'off') mood = 'neutral';
+        const platform = document.getElementById('platformSelect').value;
+
+        try {
+          const res = await fetch('/recommend', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mood: mood, platform: platform })
+          });
+
+          const data = await res.json();
+          renderRecommendations(data.recommendations || []);
+        } catch (e) {
+          console.error("Error fetching recommendations:", e);
+        }
+      }
+
+      async function manualSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        const searchPlatform = document.getElementById('searchPlatformSelect').value;
+        if (!query) return;
+
+        try {
+          const res = await fetch('/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: query, platform: searchPlatform })
+          });
+
+          const data = await res.json();
+          if (data.recommendations && data.recommendations.length > 0) {
+            renderRecommendations(data.recommendations);
+            const topMatch = data.recommendations[0];
+            updatePlayerCard(topMatch.id, topMatch.title, topMatch.artist, topMatch.cover, topMatch.platform);
+            addHistory('Search (' + searchPlatform + '): ' + query);
+          }
+        } catch (e) {
+          console.error("Search failed:", e);
+        }
+      }
+
+      function startVoiceSearch() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert("Speech recognition is not supported in this browser. Please use Chrome.");
+          return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = ''; 
+        recognition.interimResults = false;
+
+        const btn = document.getElementById('voiceSearchBtn');
+        const status = document.getElementById('speechStatus');
+
+        btn.textContent = '🔴 Listening...';
+        btn.style.background = '#ef4444';
+        btn.style.color = 'white';
+        status.style.display = 'block';
+
+        recognition.start();
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById('searchInput').value = transcript;
+          status.style.display = 'none';
+          btn.textContent = '🎤 Speak';
+          btn.style.background = 'rgba(245, 158, 11, 0.15)';
+          btn.style.color = 'var(--accent-shell)';
+          manualSearch();
+        };
+
+        recognition.onerror = () => {
+          btn.textContent = '🎤 Speak';
+          btn.style.background = 'rgba(245, 158, 11, 0.15)';
+          btn.style.color = 'var(--accent-shell)';
+          status.style.display = 'none';
+        };
+
+        recognition.onend = () => {
+          btn.textContent = '🎤 Speak';
+          btn.style.background = 'rgba(245, 158, 11, 0.15)';
+          btn.style.color = 'var(--accent-shell)';
+          status.style.display = 'none';
+        };
+      }
+
+      function renderRecommendations(items) {
+        const container = document.getElementById('recList');
+        if (!items || items.length === 0) {
+          container.innerHTML = `<p style="color: var(--text-secondary); font-size: 0.88rem; font-weight: 600;">No recommendations found.</p>`;
+          return;
+        }
+
+        container.innerHTML = items.map(item => {
+          const thumbUrl = item.cover || `https://img.youtube.com/vi/${item.id}/hqdefault.jpg`;
+          const fallbackImg = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&auto=format&fit=crop';
+          const itemPlatform = item.platform || 'youtube';
+
+          return `
+            <div class="rec-card">
+                <div class="rec-left">
+                    <img src="${thumbUrl}" 
+                         referrerpolicy="no-referrer" 
+                         onerror="this.onerror=null; this.src='${fallbackImg}';" 
+                         class="rec-thumb" 
+                         alt="cover">
+                    <div class="rec-text-wrap">
+                        <div class="rec-title">${cleanTitle(item.title)}</div>
+                        <div class="rec-sub">${cleanTitle(item.artist)} • ${itemPlatform}</div>
+                    </div>
+                </div>
+                <div class="rec-actions">
+                    <button class="btn-play" onclick="updatePlayerCard('${item.id}', '${cleanTitle(item.title).replace(/'/g, "\\'")}', '${cleanTitle(item.artist).replace(/'/g, "\\'")}', '${thumbUrl}', '${itemPlatform}')">Play</button>
+                    <button class="btn-open" onclick="window.open('${itemPlatform === 'spotify' ? (item.id.startsWith('search/') ? 'https://open.spotify.com/' + item.id : 'https://open.spotify.com/track/' + item.id) : 'https://www.youtube.com/watch?v=' + item.id}', '_blank')">Open</button>
+                </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function updatePlayerCard(id, title, artist, cover, platform = 'youtube') {
+        const holder = document.getElementById('playerHolder');
+        const imgUrl = cover || `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+        
+        let actionButton = '';
+        if (platform === 'spotify') {
+          const spotifyUrl = id.startsWith('search/') 
+            ? `https://open.spotify.com/${id}`
+            : `https://open.spotify.com/track/${id}`;
+
+          actionButton = `
+            <a href="${spotifyUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #1db954; color: #ffffff; padding: 10px 20px; border-radius: 25px; font-size: 0.88rem; font-weight: 700; font-family: var(--font-main); text-decoration: none; width: fit-content;">
+              <span>▶ Play on Spotify</span> ↗
+            </a>
+          `;
+        } else {
+          const ytUrl = `https://www.youtube.com/watch?v=${id}`;
+          actionButton = `
+            <a href="${ytUrl}" target="_blank" class="btn-yt-launch">
+              <span>▶ Listen on YouTube</span> ↗
+            </a>
+          `;
+        }
+
+        holder.innerHTML = `
+          <div class="song-player-card">
+            <img src="${imgUrl}" referrerpolicy="no-referrer" class="song-cover-img" alt="album art">
+            <div class="song-details">
+              <div class="song-name-text">${title || 'Active Track'}</div>
+              <div class="song-artist-text">${artist || 'Audio Stream'}</div>
+              ${actionButton}
+            </div>
+          </div>
+        `;
+      }
+
+      function addHistory(mood) {
+        const box = document.getElementById('historyBox');
+        const time = new Date().toLocaleTimeString();
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `<div><strong style="text-transform:capitalize; color: var(--text-primary); font-weight: 700;">${mood}</strong><div style="font-size:0.75rem; font-weight: 600; color:var(--text-secondary);">combined • ${time}</div></div>`;
+        box.insertBefore(item, box.firstChild);
+      }
+
+      function clearHistory() {
+        document.getElementById('historyBox').innerHTML = '';
+      }
+
+      function exportCSVHistory() {
+        const historyBox = document.getElementById('historyBox');
+        const items = historyBox.getElementsByClassName('history-item');
+        if (items.length === 0) {
+          alert('No history entries to export!');
+          return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,Mood,Type,Time\n";
+
+        for (let item of items) {
+          const moodText = item.querySelector('strong') ? item.querySelector('strong').innerText : 'Neutral';
+          const subText = item.querySelector('div div') ? item.querySelector('div div').innerText : '';
+          const parts = subText.split('•');
+          const type = parts[0] ? parts[0].trim() : 'combined';
+          const time = parts[1] ? parts[1].trim() : '';
+
+          csvContent += `"${moodText}","${type}","${time}"\n`;
+        }
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "ocean_studio_mood_log.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      function toggleAmbientOcean() {
+        const statusSpan = document.getElementById('ambientStatus');
+        
+        if (isAmbientPlaying) {
+          if (ambientAudioCtx) ambientAudioCtx.suspend();
+          isAmbientPlaying = false;
+          statusSpan.textContent = 'OFF';
+        } else {
+          if (!ambientAudioCtx) {
+            ambientAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = ambientAudioCtx.sampleRate * 3;
+            const noiseBuffer = ambientAudioCtx.createBuffer(1, bufferSize, ambientAudioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+              output[i] = Math.random() * 2 - 1;
+            }
+
+            const whiteNoise = ambientAudioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+            whiteNoise.loop = true;
+
+            const filter = ambientAudioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1000, ambientAudioCtx.currentTime);
+
+            const lfo = ambientAudioCtx.createOscillator();
+            lfo.frequency.setValueAtTime(0.25, ambientAudioCtx.currentTime);
+
+            const lfoGain = ambientAudioCtx.createGain();
+            lfoGain.gain.setValueAtTime(500, ambientAudioCtx.currentTime);
+
+            lfo.connect(lfoGain);
+            lfoGain.connect(filter.frequency);
+
+            const gain = ambientAudioCtx.createGain();
+            gain.gain.setValueAtTime(0.5, ambientAudioCtx.currentTime);
+
+            whiteNoise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ambientAudioCtx.destination);
+            
+            whiteNoise.start();
+            lfo.start();
+          } else {
+            ambientAudioCtx.resume();
+          }
+          isAmbientPlaying = true;
+          statusSpan.textContent = 'ON';
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        fetchRecommendations();
+      });
+    </script>
+</body>
+</html>

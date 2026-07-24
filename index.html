@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ocean Studio - Home</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+
+      :root {
+        --bg-color: #081426;
+        --card-bg: rgba(15, 23, 42, 0.65);
+        --card-border: rgba(56, 189, 248, 0.35);
+        --card-glow: rgba(56, 189, 248, 0.25);
+        --text-primary: #f0f9ff;
+        --text-secondary: #bae6fd;
+        --accent-water: #38bdf8;
+        --accent-shell: #fbbf24;
+        --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        --font-main: 'Quicksand', sans-serif;
+        --font-heading: 'Outfit', sans-serif;
+      }
+
+      body.light-mode {
+        --bg-color: #e0f2fe;
+        --card-bg: rgba(255, 255, 255, 0.65);
+        --card-border: rgba(255, 255, 255, 0.95);
+        --card-glow: rgba(2, 132, 199, 0.2);
+        --text-primary: #082f49;
+        --text-secondary: #0369a1;
+        --accent-water: #0ea5e9;
+        --accent-shell: #f59e0b;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      @keyframes waveShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      body {
+        background: linear-gradient(-45deg, #020617, #0f172a, #082f49, #164e63);
+        background-size: 400% 400%;
+        animation: waveShift 15s ease infinite;
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        overflow-x: hidden;
+        padding-bottom: 4rem;
+        transition: background 0.5s ease;
+      }
+
+      body.light-mode {
+        background: linear-gradient(-45deg, #e0f2fe, #bae6fd, #fef3c7, #ccfbf1);
+        background-size: 400% 400%;
+      }
+
+      /* Floating Ocean Bubbles */
+      .bubble-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bubble {
+        position: absolute;
+        bottom: -50px;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(56, 189, 248, 0.2));
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        animation: floatUp 8s infinite ease-in;
+      }
+
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(0.8); opacity: 0; }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.8; }
+        100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+      }
+
+      .bubble:nth-child(1) { left: 10%; width: 25px; height: 25px; animation-duration: 7s; animation-delay: 0s; }
+      .bubble:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 10s; animation-delay: 2s; }
+      .bubble:nth-child(3) { left: 50%; width: 18px; height: 18px; animation-duration: 6s; animation-delay: 1s; }
+      .bubble:nth-child(4) { left: 70%; width: 32px; height: 32px; animation-duration: 9s; animation-delay: 3s; }
+      .bubble:nth-child(5) { left: 85%; width: 22px; height: 22px; animation-duration: 8s; animation-delay: 1.5s; }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        padding: 0 2.5rem;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--card-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      body.light-mode .navbar { background: rgba(255, 255, 255, 0.4); }
+
+      .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+
+      .logo-bubble-group {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-bubble {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #0284c7 0%, #082f49 70%, #0369a1 100%);
+        box-shadow: 0 4px 12px rgba(8, 47, 73, 0.35), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f0f9ff;
+        font-size: 1.05rem;
+        animation: bubbleFloat 3s infinite ease-in-out;
+      }
+
+      .small-bubble {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #38bdf8, #0369a1);
+        box-shadow: 0 2px 6px rgba(3, 105, 161, 0.4);
+        animation: bubblePop 2.5s infinite ease-in-out;
+      }
+
+      @keyframes bubbleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      @keyframes bubblePop { 0%, 100% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } }
+
+      .logo-text { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+
+      .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 700; margin-left: 1.2rem; }
+      .nav-links a.active { color: var(--accent-water); }
+
+      .theme-btn {
+        background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-primary);
+        padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 700; font-family: var(--font-main);
+      }
+
+      .main-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Hero Section */
+      .hero-container {
+        margin: 4rem auto 3.5rem auto;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2.5rem;
+        align-items: center;
+      }
+
+      .hero-text h1 {
+        font-family: var(--font-heading);
+        font-size: 3.2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: var(--text-primary);
+        margin-bottom: 1.2rem;
+        min-height: 150px;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 4px;
+        height: 1em;
+        background-color: var(--accent-water);
+        margin-left: 6px;
+        vertical-align: sub;
+        animation: blinkCursor 0.8s infinite;
+      }
+
+      @keyframes blinkCursor {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+
+      .hero-text p {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+      }
+
+      .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--btn-gradient);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 14px 34px;
+        border-radius: 18px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 6px 22px rgba(14, 165, 233, 0.4);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .btn-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(14, 165, 233, 0.6);
+      }
+
+      /* Visual Container */
+      .ocean-visuals {
+        position: relative; height: 380px; display: flex; justify-content: center; align-items: center;
+      }
+
+      .sea-card {
+        position: absolute; width: 270px; padding: 1.6rem; background: var(--card-bg);
+        border: 1px solid var(--card-border); border-radius: 22px; backdrop-filter: blur(20px);
+        box-shadow: 0 10px 30px var(--card-glow), inset 0 0 10px rgba(255,255,255,0.1);
+        animation: floatSway 6s infinite ease-in-out;
+        z-index: 3;
+      }
+
+      .sea-card.c1 { top: 10px; left: 10px; transform: rotate(-6deg); animation-delay: 0s; }
+
+      /* ✨ New Sleek Vinyl & Waveform Graphic Card */
+      .vinyl-player-card {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 290px;
+        padding: 1.4rem;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 22px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 12px 36px var(--card-glow), inset 0 0 15px rgba(255, 255, 255, 0.08);
+        z-index: 2;
+        animation: floatSway 6s infinite ease-in-out;
+        animation-delay: 2s;
+      }
+
+      @keyframes floatSway {
+        0%, 100% { transform: translateY(0) rotate(2deg); }
+        50% { transform: translateY(-10px) rotate(0deg); }
+      }
+
+      .vinyl-top-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1rem;
+      }
+
+      /* Spinning Vinyl Disc Animation */
+      .vinyl-disc {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: conic-gradient(#020617, #1e293b, #0f172a, #020617);
+        border: 2px solid rgba(56, 189, 248, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        animation: spinVinyl 4s linear infinite;
+        flex-shrink: 0;
+      }
+
+      .vinyl-center {
+        width: 18px;
+        height: 18px;
+        background: var(--accent-water);
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+      }
+
+      @keyframes spinVinyl {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .vinyl-meta { display: flex; flex-direction: column; min-width: 0; }
+      .vinyl-song { font-family: var(--font-heading); font-size: 0.95rem; font-weight: 800; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .vinyl-artist { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+
+      /* Glowing Waveform Line */
+      .waveform-line-box {
+        width: 100%;
+        height: 35px;
+        background: rgba(8, 47, 73, 0.6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 8px;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+      }
+
+      .wave-bar {
+        width: 4px;
+        height: 10px;
+        background: var(--accent-water);
+        border-radius: 4px;
+        animation: wavePulse 1s infinite ease-in-out alternate;
+      }
+
+      .wave-bar:nth-child(2) { animation-delay: 0.15s; height: 20px; }
+      .wave-bar:nth-child(3) { animation-delay: 0.3s; height: 14px; }
+      .wave-bar:nth-child(4) { animation-delay: 0.05s; height: 25px; background: #818cf8; }
+      .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 18px; }
+      .wave-bar:nth-child(6) { animation-delay: 0.2s; height: 22px; }
+      .wave-bar:nth-child(7) { animation-delay: 0.35s; height: 12px; }
+      .wave-bar:nth-child(8) { animation-delay: 0.1s; height: 20px; }
+
+      @keyframes wavePulse {
+        0% { transform: scaleY(0.4); opacity: 0.5; }
+        100% { transform: scaleY(1.3); opacity: 1; }
+      }
+
+      .btn-mini-play {
+        display: block;
+        width: 100%;
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        color: var(--accent-water);
+        padding: 7px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        font-family: var(--font-main);
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.2s ease;
+      }
+      .btn-mini-play:hover { background: var(--accent-water); color: #ffffff; }
+
+      .card-tag {
+        display: inline-block; background: rgba(14, 165, 233, 0.2); color: var(--accent-water);
+        font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 10px; margin-bottom: 8px;
+      }
+      .card-title { font-family: var(--font-heading); font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; }
+      .card-desc { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+
+      /* Section Headers */
+      .section-header { text-align: center; margin-bottom: 2rem; }
+      .section-title { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+      .section-subtitle { font-size: 1rem; color: var(--text-secondary); font-weight: 600; }
+
+      .mood-grid-section { margin-bottom: 4.5rem; }
+      .mood-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+
+      .mood-card {
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;
+        padding: 1.5rem; backdrop-filter: blur(20px); box-shadow: 0 10px 25px var(--card-glow);
+        text-decoration: none; color: var(--text-primary);
+        transition: transform 0.25s ease, border-color 0.25s ease;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .mood-card:hover { transform: translateY(-6px); border-color: var(--accent-water); }
+
+      .mood-icon-bg {
+        width: 48px; height: 48px; border-radius: 14px; background: rgba(14, 165, 233, 0.15);
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;
+      }
+      .mood-title { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+      .mood-desc { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 1rem; }
+      .mood-action { font-size: 0.85rem; font-weight: 700; color: var(--accent-water); display: flex; align-items: center; gap: 6px; }
+
+      .how-section { margin-bottom: 4.5rem; }
+      .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+      @media (max-width: 850px) { .steps-grid { grid-template-columns: 1fr; } .hero-container { grid-template-columns: 1fr; } }
+
+      .step-card {
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 22px;
+        padding: 2rem 1.5rem; backdrop-filter: blur(20px); box-shadow: 0 10px 25px var(--card-glow);
+        position: relative; text-align: center;
+      }
+      .step-badge {
+        position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+        background: var(--btn-gradient); color: white; width: 32px; height: 32px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;
+      }
+      .step-icon { font-size: 2.2rem; margin-top: 0.5rem; margin-bottom: 1rem; }
+      .step-title { font-family: var(--font-heading); font-weight: 800; font-size: 1.2rem; margin-bottom: 8px; }
+      .step-desc { font-size: 0.88rem; color: var(--text-secondary); font-weight: 600; line-height: 1.5; }
+
+      .privacy-banner {
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px;
+        padding: 2.5rem 2rem; backdrop-filter: blur(25px); box-shadow: 0 12px 36px var(--card-glow);
+        text-align: center; margin-bottom: 2rem;
+      }
+      .privacy-title { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; margin-bottom: 0.8rem; }
+      .privacy-desc { font-size: 1rem; color: var(--text-secondary); font-weight: 600; max-width: 700px; margin: 0 auto 1.8rem auto; line-height: 1.6; }
+      .tech-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+      .tech-pill {
+        background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35);
+        color: var(--accent-water); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;
+      }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="bubble-container">
+        <div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="/" class="logo-container">
+            <div class="logo-bubble-group">
+                <div class="main-bubble">🎵</div>
+                <div class="small-bubble"></div>
+            </div>
+            <span class="logo-text">AI Ocean Studio</span>
+        </a>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div class="nav-links">
+                <a href="/" class="active">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()"><span id="themeText">Light</span> ☀️</button>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="hero-container">
+            <div class="hero-text">
+                <h1><span id="typewriterText"></span><span class="cursor"></span></h1>
+                <p>Let your real-time facial expressions and voice energy curate personalized ocean-vibed playlists automatically.</p>
+                <a href="/dashboard" class="btn-cta">Launch Studio Dashboard 🌊</a>
+            </div>
+
+            <div class="ocean-visuals">
+                <div class="sea-card c1">
+                    <span class="card-tag">🌊 Mood Tracking</span>
+                    <div class="card-title">Real-time Face AI ✨</div>
+                    <div class="card-desc">Classifies Happy, Sad, Angry, Fear, Tired, and Exhausted expressions.</div>
+                </div>
+
+                <!-- ✨ Sleek Vinyl & Live Waveform Card -->
+                <div class="vinyl-player-card">
+                    <span class="card-tag">🎵 Live Stream Preview</span>
+                    <div class="vinyl-top-row">
+                        <div class="vinyl-disc">
+                            <div class="vinyl-center"></div>
+                        </div>
+                        <div class="vinyl-meta">
+                            <div class="vinyl-song">Ocean Waves & Lofi</div>
+                            <div class="vinyl-artist">AI Vibe Engine 🌊</div>
+                        </div>
+                    </div>
+
+                    <!-- Animated Audio Waveform -->
+                    <div class="waveform-line-box">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+
+                    <a href="/dashboard" class="btn-mini-play">▶ Test Live Stream</a>
+                </div>
+            </div>
+        </div>
+
+        <section class="mood-grid-section">
+            <div class="section-header">
+                <h2 class="section-title">Explore Curated Ocean Vibe Catalogs 🦪</h2>
+                <p class="section-subtitle">Instant emotion mapping powered by client-side neural classification</p>
+            </div>
+
+            <div class="mood-grid">
+                <a href="/dashboard" class="mood-card">
+                    <div>
+                        <div class="mood-icon-bg">🌊</div>
+                        <div class="mood-title">Happy High Tides</div>
+                        <div class="mood-desc">Upbeat chart-toppers & high-energy rhythms to elevate your mood.</div>
+                    </div>
+                    <div class="mood-action">Launch Stream ➔</div>
+                </a>
+
+                <a href="/dashboard" class="mood-card">
+                    <div>
+                        <div class="mood-icon-bg">🌧️</div>
+                        <div class="mood-title">Deep Blue Currents</div>
+                        <div class="mood-desc">Gentle acoustic ballads & emotional melodies for quiet moments.</div>
+                    </div>
+                    <div class="mood-action">Launch Stream ➔</div>
+                </a>
+
+                <a href="/dashboard" class="mood-card">
+                    <div>
+                        <div class="mood-icon-bg">🪸</div>
+                        <div class="mood-title">Pearl Study Lofi</div>
+                        <div class="mood-desc">Smooth ambient streams for deep focus, studying, and relaxation.</div>
+                    </div>
+                    <div class="mood-action">Launch Stream ➔</div>
+                </a>
+
+                <a href="/dashboard" class="mood-card">
+                    <div>
+                        <div class="mood-icon-bg">⚡</div>
+                        <div class="mood-title">Storm Energy Surge</div>
+                        <div class="mood-desc">Powerful rock & electronic beats matched to intense voice signals.</div>
+                    </div>
+                    <div class="mood-action">Launch Stream ➔</div>
+                </a>
+            </div>
+        </section>
+
+        <section class="how-section">
+            <div class="section-header">
+                <h2 class="section-title">How AI Ocean Studio Works ✨</h2>
+                <p class="section-subtitle">3 seamless steps to mood-aware audio streaming</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-badge">1</div>
+                    <div class="step-icon">📷</div>
+                    <div class="step-title">Live Sensor Input</div>
+                    <div class="step-desc">Enable your camera or microphone for real-time expression and voice volume sampling.</div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-badge">2</div>
+                    <div class="step-icon">🧠</div>
+                    <div class="step-title">Neural Mapping</div>
+                    <div class="step-desc">In-browser models classify 7 distinct facial expressions & voice energy levels instantly.</div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-badge">3</div>
+                    <div class="step-icon">🎶</div>
+                    <div class="step-title">YouTube Stream Sync</div>
+                    <div class="step-desc">Receive tailored track recommendations and launch high-res YouTube audio previews.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="privacy-banner">
+            <h2 class="privacy-title">100% On-Device & Privacy-First 🔒</h2>
+            <p class="privacy-desc">
+                Your privacy is paramount. Camera frames and audio waveforms are analyzed locally inside your web browser. No video frames or audio recordings are ever uploaded to any cloud server.
+            </p>
+            <div class="tech-pills">
+                <span class="tech-pill">Python Flask</span>
+                <span class="tech-pill">face-api.js</span>
+                <span class="tech-pill">Web Speech API</span>
+                <span class="tech-pill">WebAudio RMS Spectrum</span>
+                <span class="tech-pill">YouTube Stream Sync</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+      const phrases = [
+        "Dive into emotion-driven music discovery 🦪",
+        "Make a chill playlist for late night studying 🌊",
+        "Play upbeat music when you feel energetic ✨",
+        "Search any song with your voice assistant 🎙️"
+      ];
+
+      let phraseIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+      const target = document.getElementById("typewriterText");
+
+      function typeLoop() {
+        const currentPhrase = phrases[phraseIndex];
+
+        if (isDeleting) {
+          target.textContent = currentPhrase.substring(0, charIndex - 1);
+          charIndex--;
+        } else {
+          target.textContent = currentPhrase.substring(0, charIndex + 1);
+          charIndex++;
+        }
+
+        let typeSpeed = isDeleting ? 40 : 80;
+
+        if (!isDeleting && charIndex === currentPhrase.length) {
+          typeSpeed = 2200;
+          isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+          isDeleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          typeSpeed = 400;
+        }
+
+        setTimeout(typeLoop, typeSpeed);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        typeLoop();
+      });
+
+      function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        document.getElementById('themeText').textContent = isLight ? 'Dark 🌙' : 'Light ☀️';
+      }
+    </script>
+</body>
+</html>

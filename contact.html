@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ocean Studio - Contact</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+
+      :root {
+        --bg-color: #081426;
+        --card-bg: rgba(15, 23, 42, 0.65);
+        --card-border: rgba(56, 189, 248, 0.35);
+        --card-glow: rgba(56, 189, 248, 0.25);
+        --text-primary: #f0f9ff;
+        --text-secondary: #bae6fd;
+        --accent-water: #38bdf8;
+        --accent-shell: #fbbf24;
+        --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        --font-main: 'Quicksand', sans-serif;
+        --font-heading: 'Outfit', sans-serif;
+      }
+
+      body.light-mode {
+        --bg-color: #e0f2fe;
+        --card-bg: rgba(255, 255, 255, 0.65);
+        --card-border: rgba(255, 255, 255, 0.95);
+        --card-glow: rgba(2, 132, 199, 0.2);
+        --text-primary: #082f49;
+        --text-secondary: #0369a1;
+        --accent-water: #0ea5e9;
+        --accent-shell: #f59e0b;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      @keyframes waveShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      body {
+        background: linear-gradient(-45deg, #020617, #0f172a, #082f49, #164e63);
+        background-size: 400% 400%;
+        animation: waveShift 15s ease infinite;
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        overflow-x: hidden;
+        padding-bottom: 4rem;
+        transition: background 0.5s ease;
+      }
+
+      body.light-mode {
+        background: linear-gradient(-45deg, #e0f2fe, #bae6fd, #fef3c7, #ccfbf1);
+        background-size: 400% 400%;
+      }
+
+      /* Floating Ocean Bubbles */
+      .bubble-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bubble {
+        position: absolute;
+        bottom: -50px;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(56, 189, 248, 0.2));
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        animation: floatUp 8s infinite ease-in;
+      }
+
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(0.8); opacity: 0; }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.8; }
+        100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+      }
+
+      .bubble:nth-child(1) { left: 10%; width: 25px; height: 25px; animation-duration: 7s; animation-delay: 0s; }
+      .bubble:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 10s; animation-delay: 2s; }
+      .bubble:nth-child(3) { left: 50%; width: 18px; height: 18px; animation-duration: 6s; animation-delay: 1s; }
+      .bubble:nth-child(4) { left: 70%; width: 32px; height: 32px; animation-duration: 9s; animation-delay: 3s; }
+      .bubble:nth-child(5) { left: 85%; width: 22px; height: 22px; animation-duration: 8s; animation-delay: 1.5s; }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        padding: 0 2.5rem;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--card-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      body.light-mode .navbar { background: rgba(255, 255, 255, 0.4); }
+
+      .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+
+      .logo-bubble-group {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-bubble {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #0284c7 0%, #082f49 70%, #0369a1 100%);
+        box-shadow: 0 4px 12px rgba(8, 47, 73, 0.35), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f0f9ff;
+        font-size: 1.05rem;
+        animation: bubbleFloat 3s infinite ease-in-out;
+      }
+
+      .small-bubble {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #38bdf8, #0369a1);
+        box-shadow: 0 2px 6px rgba(3, 105, 161, 0.4);
+        animation: bubblePop 2.5s infinite ease-in-out;
+      }
+
+      @keyframes bubbleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      @keyframes bubblePop { 0%, 100% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } }
+
+      .logo-text { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+
+      .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 700; margin-left: 1.2rem; }
+      .nav-links a.active { color: var(--accent-water); }
+
+      .theme-btn {
+        background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-primary);
+        padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 700; font-family: var(--font-main);
+      }
+
+      .contact-container {
+        max-width: 1050px;
+        margin: 3.5rem auto;
+        padding: 0 1.5rem;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 2.5rem;
+        position: relative;
+        z-index: 2;
+      }
+      @media(max-width: 850px) { .contact-container { grid-template-columns: 1fr; } }
+
+      .contact-card, .info-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        backdrop-filter: blur(25px);
+        box-shadow: 0 12px 36px var(--card-glow), inset 0 0 15px rgba(255, 255, 255, 0.08);
+      }
+
+      .contact-card h2 { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+      .contact-subtitle { font-size: 0.9rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 1.5rem; }
+
+      .form-group { margin-bottom: 1.2rem; }
+      .form-group label { display: block; font-weight: 700; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.9rem; }
+      .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--card-border);
+        background: rgba(0,0,0,0.3);
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        font-weight: 600;
+        outline: none;
+      }
+      body.light-mode .form-group input, body.light-mode .form-group textarea, body.light-mode .form-group select { background: rgba(255, 255, 255, 0.7); }
+
+      .btn-submit {
+        background: var(--btn-gradient);
+        color: #ffffff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-family: var(--font-main);
+        font-size: 0.95rem;
+        cursor: pointer;
+        box-shadow: 0 4px 18px rgba(14, 165, 233, 0.4);
+        width: 100%;
+        transition: transform 0.2s ease;
+      }
+      .btn-submit:hover { transform: translateY(-2px); }
+
+      /* Info Side Cards */
+      .info-card h3 { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; }
+      .info-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.5rem; }
+      .info-icon { font-size: 1.3rem; background: rgba(14, 165, 233, 0.15); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .info-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+      .info-details { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; }
+
+      /* Success Alert Message */
+      #successMsg {
+        display: none;
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        color: #34d399;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="bubble-container">
+        <div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="/" class="logo-container">
+            <div class="logo-bubble-group">
+                <div class="main-bubble">🎵</div>
+                <div class="small-bubble"></div>
+            </div>
+            <span class="logo-text">AI Ocean Studio</span>
+        </a>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/about">About</a>
+                <a href="/contact" class="active">Contact</a>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()"><span id="themeText">Light</span> ☀️</button>
+        </div>
+    </nav>
+
+    <div class="contact-container">
+        <!-- Left Column: Contact Form -->
+        <div class="contact-card">
+            <h2>Get in Touch 🦪</h2>
+            <p class="contact-subtitle">Have questions or feedback about AI Ocean Studio? Drop us a note!</p>
+
+            <div id="successMsg">✨ Thank you! Your message has been sent successfully.</div>
+
+            <form onsubmit="handleContactSubmit(event)">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="contactName" placeholder="Enter your name..." required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="contactEmail" placeholder="Enter your email..." required>
+                </div>
+                <div class="form-group">
+                    <label>Inquiry Type</label>
+                    <select id="inquiryType" class="form-group input">
+                        <option value="general">General Support / Inquiry</option>
+                        <option value="bug">Report a Bug / Issue</option>
+                        <option value="feature">Feature Request</option>
+                        <option value="collab">Academic / Project Collaboration</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="contactMsg" rows="4" placeholder="Enter your message..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Send Message ✨</button>
+            </form>
+        </div>
+
+        <!-- Right Column: Info & Support Cards -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="info-card">
+                <h3>Direct Assistance 🌊</h3>
+                
+                <div class="info-item">
+                    <div class="info-icon">📧</div>
+                    <div>
+                        <div class="info-title">Email Support</div>
+                        <div class="info-details">support@aioceanstudio.demo</div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">⚡</div>
+                    <div>
+                        <div class="info-title">Response Time</div>
+                        <div class="info-details">Typically within 24 hours</div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">🔒</div>
+                    <div>
+                        <div class="info-title">Privacy Assured</div>
+                        <div class="info-details">All sensor data stays locally in your browser session.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card" style="text-align: center; padding: 2rem;">
+                <h3 style="margin-bottom: 0.5rem;">Explore the Studio ✨</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 1.2rem;">Ready to test real-time face and voice music generation?</p>
+                <a href="/dashboard" class="btn-submit" style="text-decoration: none; display: inline-block; padding: 10px 20px;">Launch Dashboard 🚀</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        document.getElementById('themeText').textContent = isLight ? 'Dark 🌙' : 'Light ☀️';
+      }
+
+      function handleContactSubmit(event) {
+        event.preventDefault();
+        const successBox = document.getElementById('successMsg');
+        successBox.style.display = 'block';
+        
+        // Reset form inputs
+        document.getElementById('contactName').value = '';
+        document.getElementById('contactEmail').value = '';
+        document.getElementById('contactMsg').value = '';
+
+        setTimeout(() => {
+          successBox.style.display = 'none';
+        }, 5000);
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ocean Studio - About</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+
+      :root {
+        --bg-color: #081426;
+        --card-bg: rgba(15, 23, 42, 0.65);
+        --card-border: rgba(56, 189, 248, 0.35);
+        --card-glow: rgba(56, 189, 248, 0.25);
+        --text-primary: #f0f9ff;
+        --text-secondary: #bae6fd;
+        --accent-water: #38bdf8;
+        --accent-shell: #fbbf24;
+        --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        --font-main: 'Quicksand', sans-serif;
+        --font-heading: 'Outfit', sans-serif;
+      }
+
+      body.light-mode {
+        --bg-color: #e0f2fe;
+        --card-bg: rgba(255, 255, 255, 0.65);
+        --card-border: rgba(255, 255, 255, 0.95);
+        --card-glow: rgba(2, 132, 199, 0.2);
+        --text-primary: #082f49;
+        --text-secondary: #0369a1;
+        --accent-water: #0ea5e9;
+        --accent-shell: #f59e0b;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      @keyframes waveShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      body {
+        background: linear-gradient(-45deg, #020617, #0f172a, #082f49, #164e63);
+        background-size: 400% 400%;
+        animation: waveShift 15s ease infinite;
+        color: var(--text-primary);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        overflow-x: hidden;
+        padding-bottom: 4rem;
+        transition: background 0.5s ease;
+      }
+
+      body.light-mode {
+        background: linear-gradient(-45deg, #e0f2fe, #bae6fd, #fef3c7, #ccfbf1);
+        background-size: 400% 400%;
+      }
+
+      /* Floating Ocean Bubbles */
+      .bubble-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bubble {
+        position: absolute;
+        bottom: -50px;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), rgba(56, 189, 248, 0.2));
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        animation: floatUp 8s infinite ease-in;
+      }
+
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(0.8); opacity: 0; }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.8; }
+        100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+      }
+
+      .bubble:nth-child(1) { left: 10%; width: 25px; height: 25px; animation-duration: 7s; animation-delay: 0s; }
+      .bubble:nth-child(2) { left: 25%; width: 40px; height: 40px; animation-duration: 10s; animation-delay: 2s; }
+      .bubble:nth-child(3) { left: 50%; width: 18px; height: 18px; animation-duration: 6s; animation-delay: 1s; }
+      .bubble:nth-child(4) { left: 70%; width: 32px; height: 32px; animation-duration: 9s; animation-delay: 3s; }
+      .bubble:nth-child(5) { left: 85%; width: 22px; height: 22px; animation-duration: 8s; animation-delay: 1.5s; }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        padding: 0 2.5rem;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--card-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      body.light-mode .navbar { background: rgba(255, 255, 255, 0.4); }
+
+      .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+
+      .logo-bubble-group {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-bubble {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #0284c7 0%, #082f49 70%, #0369a1 100%);
+        box-shadow: 0 4px 12px rgba(8, 47, 73, 0.35), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f0f9ff;
+        font-size: 1.05rem;
+        animation: bubbleFloat 3s infinite ease-in-out;
+      }
+
+      .small-bubble {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #38bdf8, #0369a1);
+        box-shadow: 0 2px 6px rgba(3, 105, 161, 0.4);
+        animation: bubblePop 2.5s infinite ease-in-out;
+      }
+
+      @keyframes bubbleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      @keyframes bubblePop { 0%, 100% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } }
+
+      .logo-text { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+
+      .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 700; margin-left: 1.2rem; }
+      .nav-links a.active { color: var(--accent-water); }
+
+      .theme-btn {
+        background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-primary);
+        padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 700; font-family: var(--font-main);
+      }
+
+      .about-container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; position: relative; z-index: 2; }
+
+      .sub-title { font-size: 0.9rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+      .main-heading { font-family: var(--font-heading); font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.2; }
+
+      .top-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; align-items: center; margin-bottom: 4rem; }
+
+      .desc-text { font-size: 1.05rem; font-weight: 600; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; }
+
+      .action-btns { display: flex; gap: 12px; align-items: center; margin-bottom: 2rem; }
+
+      .btn-pill-primary {
+        background: var(--btn-gradient); color: white; padding: 10px 22px; border-radius: 12px;
+        font-weight: 700; text-decoration: none; box-shadow: 0 4px 18px rgba(14, 165, 233, 0.4);
+      }
+
+      .btn-pill-secondary {
+        background: rgba(245, 158, 11, 0.15); color: var(--accent-shell); border: 1px solid rgba(245, 158, 11, 0.4);
+        padding: 10px 22px; border-radius: 12px; font-weight: 700; text-decoration: none;
+      }
+
+      .badge-tag {
+        display: inline-block; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--card-border);
+        padding: 6px 14px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; color: var(--text-primary);
+      }
+
+      .stats-row { display: flex; gap: 3rem; }
+      .stat-num { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+      .stat-lbl { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); }
+
+      /* Visual Preview Box */
+      .visual-preview-card {
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px;
+        padding: 2rem; backdrop-filter: blur(25px); box-shadow: 0 12px 36px var(--card-glow), inset 0 0 15px rgba(255, 255, 255, 0.1); text-align: center;
+      }
+
+      .wave-canvas-demo {
+        width: 100%; height: 120px; background: #082f49; border-radius: 16px; margin-bottom: 1rem;
+        display: flex; align-items: center; justify-content: center; color: #38bdf8; font-weight: 700; letter-spacing: 1px;
+      }
+
+      .section-block-title {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        margin-top: 3.5rem;
+      }
+
+      /* Features Grid */
+      .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 3rem; }
+      @media(max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+
+      .feat-card {
+        background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px;
+        padding: 1.2rem; backdrop-filter: blur(20px); box-shadow: 0 8px 24px var(--card-glow);
+      }
+
+      .feat-icon {
+        width: 36px; height: 36px; background: rgba(14, 165, 233, 0.2); color: var(--accent-water);
+        border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 10px;
+      }
+
+      .feat-title { font-family: var(--font-heading); font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+      .feat-desc { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); line-height: 1.5; }
+
+      /* 📊 Mood Matrix Grid */
+      .matrix-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+        margin-bottom: 3rem;
+      }
+      @media(max-width: 800px) { .matrix-grid { grid-template-columns: 1fr; } }
+
+      .matrix-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 1.2rem;
+        backdrop-filter: blur(20px);
+      }
+      .matrix-mood { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; color: var(--accent-water); }
+      .matrix-desc { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+
+      /* 🦪 Developer Card */
+      .dev-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 2rem;
+        backdrop-filter: blur(25px);
+        box-shadow: 0 12px 36px var(--card-glow);
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+      .dev-avatar {
+        width: 90px; height: 90px; border-radius: 50%;
+        background: var(--btn-gradient); display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; flex-shrink: 0; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+      }
+      .dev-info h3 { font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+      .dev-info p { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); line-height: 1.5; }
+
+      /* ❓ FAQ Accordion */
+      .faq-box {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(20px);
+      }
+      .faq-q { font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; }
+      .faq-a { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); line-height: 1.5; }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="bubble-container">
+        <div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="/" class="logo-container">
+            <div class="logo-bubble-group">
+                <div class="main-bubble">🎵</div>
+                <div class="small-bubble"></div>
+            </div>
+            <span class="logo-text">AI Ocean Studio</span>
+        </a>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/about" class="active">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()"><span id="themeText">Light</span> ☀️</button>
+        </div>
+    </nav>
+
+    <div class="about-container">
+        <div class="top-grid">
+            <div>
+                <div class="sub-title">About the project</div>
+                <h1 class="main-heading">AI Ocean Studio — emotion-driven music discovery 🦪</h1>
+                <p class="desc-text">
+                    We fuse live face expression analysis and voice emotion heuristics to recommend and play music automatically. Designed for privacy-first demos — processing happens client-side for face/voice, with server-side APIs used only for music search/recommendation.
+                </p>
+
+                <div class="action-btns">
+                    <a href="/dashboard" class="btn-pill-primary">Try Live Demo ✨</a>
+                    <a href="/contact" class="btn-pill-secondary">Contact Integrations</a>
+                    <span class="badge-tag">Version v1.0-demo</span>
+                </div>
+
+                <div class="stats-row">
+                    <div>
+                        <div class="stat-num">98%</div>
+                        <div class="stat-lbl">Client-side processing (%)</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">7</div>
+                        <div class="stat-lbl">Supported moods</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">300+</div>
+                        <div class="stat-lbl">Monthly demo plays</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visual-preview-card">
+                <div class="wave-canvas-demo">🌊 Visualizer & Audio Spectrum</div>
+                <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 4px;">Privacy-First Engine ✨</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Client-side neural landmark analysis</div>
+            </div>
+        </div>
+
+        <!-- Key Features Section -->
+        <h2 class="section-block-title">Key System Features</h2>
+        <div class="features-grid">
+            <div class="feat-card">
+                <div class="feat-icon">📷</div>
+                <div class="feat-title">Real-time Face Mood</div>
+                <div class="feat-desc">Client-side landmark heuristics analyze expression intensity to determine live emotion.</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-icon">🎙️</div>
+                <div class="feat-title">Voice Assistant</div>
+                <div class="feat-desc">WebSpeech API & Audio Context spectrum levels allow typing or speaking song titles directly.</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-icon">🎵</div>
+                <div class="feat-title">Smart Recommendations</div>
+                <div class="feat-desc">Server adapters query YouTube when configured, filtering for high-compatibility streams.</div>
+            </div>
+
+            <div class="feat-card">
+                <div class="feat-icon">▶️</div>
+                <div class="feat-title">Seamless Playback</div>
+                <div class="feat-desc">YouTube stream cards offer direct launch links so blocked video embeds never break your experience.</div>
+            </div>
+        </div>
+
+        <!-- 📊 Supported Moods Matrix -->
+        <h2 class="section-block-title">Supported Moods & Audio Mapping Matrix 📊</h2>
+        <div class="matrix-grid">
+            <div class="matrix-card">
+                <div class="matrix-mood">🌊 Happy / Surprised</div>
+                <div class="matrix-desc">Mapped to upbeat rhythms, pop chart-toppers & high-energy tracks.</div>
+            </div>
+            <div class="matrix-card">
+                <div class="matrix-mood">🌧️ Sad</div>
+                <div class="matrix-desc">Mapped to emotional ballads, slow acoustic melodies & piano strings.</div>
+            </div>
+            <div class="matrix-card">
+                <div class="matrix-mood">⚡ Angry / Storm</div>
+                <div class="matrix-desc">Mapped to powerful rock, heavy electronic beats & high-intensity streams.</div>
+            </div>
+            <div class="matrix-card">
+                <div class="matrix-mood">🛡️ Fear / Stress</div>
+                <div class="matrix-desc">Mapped to calming 432Hz ambient soundscapes and grounding frequencies.</div>
+            </div>
+            <div class="matrix-card">
+                <div class="matrix-mood">🌙 Tired / Exhausted</div>
+                <div class="matrix-desc">Mapped to bedtime lofi, gentle acoustic streams & rain audio.</div>
+            </div>
+            <div class="matrix-card">
+                <div class="matrix-mood">☕ Neutral / Focused</div>
+                <div class="matrix-desc">Mapped to moderate study lofi, background indie & coffee shop jazz.</div>
+            </div>
+        </div>
+
+        <!-- ❓ FAQ Section -->
+        <h2 class="section-block-title">Frequently Asked Questions (FAQ) ❓</h2>
+        <div class="faq-box">
+            <div class="faq-q">Is my camera or microphone recording saved?</div>
+            <div class="faq-a">No. 100% of video frame analysis and voice RMS processing happens client-side in real time. No video or audio is ever stored or uploaded.</div>
+        </div>
+        <div class="faq-box">
+            <div class="faq-q">How does voice detection complement facial detection?</div>
+            <div class="faq-a">When facial expressions are neutral or camera lighting is dim, microphone energy spectrum levels help differentiate between a relaxed state and fatigue.</div>
+        </div>
+
+        <!-- 🦪 Developer Card -->
+        <div class="dev-card">
+            <div class="dev-avatar">👩‍💻</div>
+            <div class="dev-info">
+                <h3>Created by Khushi Bhalla ✨</h3>
+                <p>Computer Applications student passionate about building intelligent, privacy-first web solutions fusing machine learning heuristics with immersive UI design.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        document.getElementById('themeText').textContent = isLight ? 'Dark 🌙' : 'Light ☀️';
+      }
+    </script>
+</body>
+</html>
